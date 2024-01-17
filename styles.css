@@ -1,0 +1,267 @@
+*, *::after, *::before {
+    box-sizing: border-box; /*makes styling our widths and heights a lot easier*/
+}
+
+/*centers the title image*/
+* {
+    text-align: center;
+}
+
+/* selects our root element*/
+:root {
+    --cell-size: 150px;
+    /*this is for how large our X and 0 size will be. we want mark size to be 90% of the cell size so we calculate by .9*/
+    --mark-size: calc(var(--cell-size) * .9);
+}
+
+body {
+    margin: 0; /*setting margins to zero removes all margins on page. this will help making the black background overlay easier to put in place*/
+    background-image: url('assets/skywallpaper.jpg');
+    cursor: url('assets/kawaii_cloud.cur'), auto;
+    font-family: 'Metamorphous', sans-serif; /* this is for the metamorphous google font that was added in */
+}
+
+/* board is the element that wraps all our cells*/
+.board {
+    /*using view width and height makes it so the board will fill our entire screen which will make it so its easy to center*/
+    width: 100vw;
+    height: 50vh; /*changing lower moves the grid upwards*/
+    display: grid;
+    justify-content: center;
+    align-content: center; /*this centers our board element so everything is centered inside of the board div*/
+    /*using items will center the things inside of the cells and not just the cells themselves*/
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(3, auto);
+    cursor: pointer; /*uses hand pointer when hovering anywhere on the screen for the board*/
+    cursor: url('assets/kawaii_cloud.cur'), auto;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 2px solid rgb(111, 70, 150); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /*makes the X nicely positioned and relative to each side so its even*/
+}
+
+/*this takes the first three cells in the first row, and removes the top border of the grid*/
+.cell:first-child,
+.cell:nth-child(2), /* nth-child is a way to access the second child and onward*/
+.cell:nth-child(3) {
+    border-top: none;
+}
+
+/* goes through all children. does 3*n which is 3*1 + 1, which is 4, which will access the 4th cell in the second row. for 0 it will be cell number 1 and for 2 it will be cell 7. this applies to the left three cells*/
+.cell:nth-child(3n + 1) {
+    border-left: none;
+}
+
+/*we do 3n + 3 instead so it will access the right side of our cells and remove the right border*/
+.cell:nth-child(3n + 3) {
+    border-right: none;
+}
+
+/*this is for accessing the bottom three and removing the border at the bottom*/
+.cell:last-child,
+.cell:nth-child(8), /* accesses the 8th child*/
+.cell:nth-child(7) {
+    border-bottom: none;
+}
+
+/*when mousing over a cell that contains a circle or an x, change the cursor to the 'not-allowed' symbol instead*/
+.cell.x,
+.cell.circle {
+    cursor: not-allowed;
+}
+/*this needs to be above our light grey selector so it will override properly by the light grey over black*/
+.cell.x::before,
+.cell.x::after,
+.cell.circle::before{
+    background-color: rgb(111, 70, 150); /*default is black*/
+}
+
+/*add hover effects to our cells. select our board when it has the X class applied to it, get the cells inside of the board and whenever we hover them, we want to do something with them*/
+/*when we're hovering over a cell that is not an X or O, we want to change the background color to a light grey*/
+.board.x .cell:not(.x):not(.circle):hover::before,
+.board.x .cell:not(.x):not(.circle):hover::after,
+.board.circle .cell:not(.x):not(.circle):hover::before{
+    background-color: rgb(173, 154, 190);
+}
+
+/*this is where the styles go for the x cell*/
+/*we will use pseudo on this by using the before and after*/
+.cell.x::before,
+.cell.x::after,
+.board.x .cell:not(.x):not(.circle):hover::before, /*we use the 'not selector' here to make it so this doesn't apply to a cell that is already filled with an X or an O*/
+.board.x .cell:not(.x):not(.circle):hover::after {
+
+    content: ''; /* empty string so the before and after elements render*/
+    position: absolute; /*positions X lines absolutely so they have the same exact base which is going to be the parent and they won't overlap ontop of each other*/
+    width: calc(var(--mark-size) * .15); /*we want this to be 15 percent of the height of our X*/
+    height: var(--mark-size);
+}
+
+/*this is where we render each line of the X and rotate it so it looks like an X*/
+.cell.x::before,
+.board.x .cell:not(.x):not(.circle):hover::before {
+    transform: rotate(45deg);
+}
+
+.cell.x::after,
+.board.x .cell:not(.x):not(.circle):hover::after {
+    transform: rotate(-45deg);
+}
+
+.cell.circle::before,
+.cell.circle::after,
+/*when we're on a board that has the circle class, get the cells inside of it that are not already an X or O and then when we want to hover over them, we want to style the before and after element
+ to be exactly the same and to have a different position.*/
+.board.circle .cell:not(.x):not(.circle):hover::before,
+.board.circle .cell:not(.x):not(.circle):hover::after  {
+    content: ''; 
+    position: absolute; 
+    border-radius: 50%; /*this transforms the square into a circle*/
+}
+
+/*we want the before to be the larger circle because we want it behind the first circle*/
+.cell.circle::before,
+.board.circle .cell:not(.x):not(.circle):hover::before {
+    width: var(--mark-size);
+    height: var(--mark-size);
+}
+
+/*change this to slightly smaller then the before and change the background color of the middle of the circle to white*/
+.cell.circle::after,
+.board.circle .cell:not(.x):not(.circle):hover::after{
+    width: calc(var(--mark-size) * .7);
+    height: calc(var(--mark-size) * .7);
+    background-color: paleturquoise;
+}
+
+/*this is for styling the restart button and overlay for the winning message from html. making sure its always in the center of the screen.*/
+.winning-message {
+    display: none; /*setting the display to none because we don't want the message to show up on default until the end of the game*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .9); /*rgba, a is for the alpha transparency*/
+    justify-content: center;
+    align-items: center;
+    color: rgb(111, 70, 150);
+    font-size: 5rem; /*REM is short for root-em which is a unit that dictates the element's font size relative to the size of the root element. if root element is 16px, 1rem is 16px*/
+    flex-direction: column; /*stacks winning message and restart button vertically on top of one another*/
+    animation:overlay-grow 300ms forwards;
+}
+
+.winning-message button {
+    font-size: 3rem;
+    background-color: paleturquoise;
+    border: 1px solid black;
+    padding: .25em .5em;
+    cursor: pointer;
+}
+
+.winning-message button:hover {
+    background-color: paleturquoise;
+    color: rgb(111, 70, 150);
+    border-color: white;
+}
+
+.winning-message.show {
+    display: flex;
+}
+
+/*start message overlay*/
+.start-message {
+    display: none; /*setting the display to none because we don't want the message to show up on default until the end of the game*/
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .9); /*rgba, a is for the alpha transparency*/
+    justify-content: center;
+    align-items: center;
+    color: rgb(111, 70, 150);
+    font-size: 5rem;
+    flex-direction: column; /*stacks winning message and restart button vertically on top of one another*/
+    animation:overlay-grow 400ms forwards;
+}
+
+/*part of the grow animation for the start screen text and winning messages */
+@keyframes overlay-grow {
+    from {
+        background-color: rgba(0, 0, 0, 0);
+        font-size: 0;
+    }
+    to {
+        background-color: rgba(0, 0, 0, .8); /* the last value in the line darkens the background */
+        font-size: 5em;
+    }
+}
+
+.start-message button {
+    font-size: 3rem;
+    background-color: paleturquoise;
+    border: 1px solid black;
+    padding: .25em .5em;
+    cursor: pointer;
+}
+
+.start-message button:hover {
+    background-color: paleturquoise;
+    color: rgb(111, 70, 150);
+    border-color: white;
+}
+
+.start-message.show {
+    display: flex;
+}
+
+/*applying to the message under title*/
+.message {
+    color: #fff;
+    font-size: 1.5em;
+    padding-bottom: 1em;
+  }
+
+/* media query for mobile*/
+@media (max-width: 600px) { /*when the max width of our screen is 600px or less, we want to apply some special styles*/
+    :root {
+        --cell-size: 95px; 
+    }
+
+    .start-message {
+        font-size: 3rem;
+    }
+
+    .start-message button {
+        font-size: 2rem;
+        padding: .10em .1em;
+    }
+
+    .winning-message {
+        font-size: 3rem;
+    }
+
+    .winning-message button {
+        font-size: 2rem;
+        padding: .10em .1em;
+    }
+
+    @keyframes overlay-grow {
+        from {
+            background-color: rgba(0, 0, 0, 0);
+            font-size: 0;
+        }
+        to {
+            background-color: rgba(0, 0, 0, .8); /* the last value in the line darkens the background */
+            font-size: 1.7em;
+        }
+    }
+}

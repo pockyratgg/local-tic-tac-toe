@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script> <!--defer means load this after the body of html so we have access to everything in the body-->
+    <title>Tic-Tac-Toe</title>
+    <link rel="icon" type="image/x-icon" href="/assets/cloudfavicon.png">
+
+    <!--google fonts-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Metamorphous&display=swap" rel="stylesheet">
+</head>
+<body>
+    <img src="assets/purple-title-image.png" id="titleimage"/>
+    <h2 class="message"></h2>
+    <div class="board" id="board"> <!--div class is labeled board and ID, board is because using ID is easier to access this by using javascript. class board is going to be used by css so its easier to separate-->
+
+        <div class="cell" data-cell></div> <!--class of cell is going to be used for css while data-cell will be used to access for javascript -->
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <div class="winning-message" id="winningMessage"> <!--id again is for javascript. adding the word show to the class name now toggles the overlay-->
+        <div data-winning-message-text></div>
+        <button id="restartButton">Restart</button>
+    </div>
+    <!--adding in a start overlay so there is no DOMException with play method at the start of the game-->
+    <div class="start-message" id="startMessage">
+        <div data-start-message-text></div>
+        <button id="startButton">Start</button>
+    </div>
+</body>
+</html>
